@@ -117,4 +117,7 @@ if __name__ == '__main__':
     page = input("要抓取多少条数据？\n")
     at_code = input("输入验证码，需手动登录后用浏览器查看然后输入到这里\n")
     csv_filename = input("输入文件名,文件保存在xx\n")
-    search_result(page=page, at_code=at_code, csv_filename=csv_filename)
+    try:
+        search_result(page=page, at_code=at_code, csv_filename=csv_filename)
+    except KeyError:
+        print("验证码不正确请重新输入")
