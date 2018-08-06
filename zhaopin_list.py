@@ -64,7 +64,7 @@ def search_result(page, at_code, csv_filename):
     # Login_Data['__utmb'] = '269921210.10.6.1533550335425'
     res = requests.post(url, data, headers, cookies=Login_Data)
     check_json = json.loads(res.text)
-    datalist = check_json['data']['dataList']
+    datalist = tqdm(check_json['data']['dataList'])
     filename = csv_filename + '.csv'
     out = open(filename, 'a', newline='')
     csv_write = csv.writer(out, dialect='excel')
