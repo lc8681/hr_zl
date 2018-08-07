@@ -4,14 +4,31 @@ import requests
 import csv
 from tqdm import tqdm
 from urllib.parse import quote
-from time import sleep
+import time
 
 
-def search_result(page, at_code, csv_filename):
+def search_result(page, at_code, choose):
     # url
-    url = 'https://rdapi.zhaopin.com/custom/search/resumeListV2?_=1533543771973'
+    global res, filename, datalist
+    url_qc = 'https://rdapi.zhaopin.com/custom/search/resumeListV2?_=1533638160529'
+    url_qa = 'https://rdapi.zhaopin.com/custom/search/resumeListV2?_=1533543771973'
     # postdata部分
-    data = json.dumps({
+    data_qc = json.dumps({
+        "start": 0,
+        "rows": int(page),
+        "S_DISCLOSURE_LEVEL": 2,
+        "S_EXCLUSIVE_COMPANY": "天津红日康仁堂药品销售有限公司;北京康仁堂制药有限公司",
+        "S_EDUCATION": "5,1",
+        "S_BIRTH_YEAR": "1988,1998",
+        "S_MAJOR_NAME_ALL": "药学;药物制剂;制药工程;中药学;中药资源与开发",
+        "S_DATE_MODIFIED": "180507,180807",
+        "S_DESIRED_SALARY": "0400106000;0600108000",
+        "S_DESIRED_CITY": "530",
+        "S_ENGLISH_RESUME": "1",
+        "isrepeat": 1,
+        "sort": "complex"
+    })
+    data_qa = json.dumps({
         "start": 0,
         "rows": int(page),
         "S_DISCLOSURE_LEVEL": 2,
@@ -19,9 +36,10 @@ def search_result(page, at_code, csv_filename):
         "S_EDUCATION": "4,1",
         "S_GENDER": "1",
         "S_BIRTH_YEAR": "1988,1998",
-        "S_MAJOR_NAME_ALL": "中药学;中药资源与开发",
-        "S_DATE_MODIFIED": "180506,180806",
-        "S_DESIRED_SALARY": "0400106000",
+        "S_MAJOR_NAME_ALL": "中药学",
+        "S_DATE_MODIFIED": "180507,180807",
+        "S_DESIRED_SALARY": "0400106000;0600108000",
+        "S_DESIRED_CITY": "530",
         "S_ENGLISH_RESUME": "1",
         "isrepeat": 1,
         "sort": "complex"
@@ -62,62 +80,98 @@ def search_result(page, at_code, csv_filename):
     # Login_Data['zp-route-meta'] = 'uid=695933625,orgid=27963463'
     # Login_Data['login_point'] = '113329276'
     # Login_Data['__utmb'] = '269921210.10.6.1533550335425'
-    res = requests.post(url, data, headers, cookies=Login_Data)
-    check_json = json.loads(res.text)
-    datalist = tqdm(check_json['data']['dataList'])
-    filename = csv_filename + '.csv'
+    if choose == str(1):
+        res = requests.post(url_qc, data_qc, headers, cookies=Login_Data)
+        check_json = json.loads(res.text)
+        datalist = tqdm(check_json['data']['dataList'])
+        filename = time.strftime('[qc]' + "%Y-%m-%d %H-%M-%S", time.localtime()) + '.csv'
+    elif choose == str(2):
+        res = requests.post(url_qa, data_qa, headers, cookies=Login_Data)
+        check_json = json.loads(res.text)
+        datalist = tqdm(check_json['data']['dataList'])
+        filename = './' + time.strftime('[qa]' + "%Y-%m-%d %H-%M-%S", time.localtime()) + '.csv'
     out = open(filename, 'a', newline='')
     csv_write = csv.writer(out, dialect='excel')
-    csv_header = ['姓名', '学历', '毕业学校', '专业', '目前状况', '链接']
+    csv_header = ['更新时间', '姓名', '工作年限', '年龄', '现居住地', '期望工作地点', '学历', '毕业学校', '专业', '期望月薪', '目前状况',
+                  '期望从事职业', '最近所在公司', '最近所在公司职位', '最近工作描述', '链接']
     csv_write.writerow(csv_header)
     for x in datalist:
-        sleep(1)
         # resume_name = x['name']
         username = x['userName']
         # jobTitle = x['jobTitle']
         eduLevel = x['eduLevel']
         # gender = x['gender']
         # isFemale = x['isFemale']
-        # age = x['age']
-        # city = x['city']
+        age = x['age']
+        city = x['city']
         # cityId = x['cityId']
-        # modifyDate = x['modifyDate']
-        # desiredSalary = x['desiredSalary']
+        modifyDate = x['modifyDate']
+        desiredSalary = x['desiredSalary']
         careerStatus = x['careerStatus']
-        # workYears = x['workYears']
+        workYears = x['workYears']
         school = x['school']
         # employment = x['employment']
-        # jobType = x['jobType']
-        # desireCity = x['desireCity']
+        jobType = x['jobType']
+        desireCity = x['desireCity']
         major = x['major']
         id = x['id']
         t = x['t']
         k = x['k']
         # beginDate = x['lastJobDetail']['beginDate']
         # endDate = x['lastJobDetail']['endDate']
-        # companyName = x['lastJobDetail']['companyName']
+        companyName = x['lastJobDetail']['companyName']
         # department = x['lastJobDetail']['department']
-        # jobName = x['lastJobDetail']['jobName']
+        jobName = x['lastJobDetail']['jobName']
         # salary = x['lastJobDetail']['salary']
         # industry = x['lastJobDetail']['industry']
         # profession = x['lastJobDetail']['profession']
         # companyType = x['lastJobDetail']['companyType']
-        # description = x['lastJobDetail']['description']
+        description = x['lastJobDetail']['description']
         # school_beginDate = x['schoolDetail']['beginDate']
         # school_endDate = x['schoolDetail']['endDate']
-        # school_schoolName = x['schoolDetail']['schoolName']
+        school_schoolName = x['schoolDetail']['schoolName']
         # school_major = x['schoolDetail']['major']
         # school_degree = x['schoolDetail']['degree']
-        resume_url = 'https://rd5.zhaopin.com/resume/detail?keyword=&resumeNo=' + quote(id, 'utf-8') + '_1_1%3B' + quote(k, 'utf-8') + '%3B' + quote(t, 'utf-8') + '&openFrom=1'
-        information = [username, eduLevel, school, major, careerStatus, resume_url]
+        resume_url = 'https://rd5.zhaopin.com/resume/detail?keyword=&resumeNo=' + quote(id,
+                                                                                        'utf-8') + '_1_1%3B' + quote(k,
+                                                                                                                     'utf-8') + '%3B' + quote(
+            t, 'utf-8') + '&openFrom=1'
+        information = [modifyDate, username, workYears, age, city, desireCity, eduLevel, school_schoolName, major,
+                       desiredSalary, careerStatus, jobType, companyName, jobName, description, resume_url]
         csv_write.writerow(information)
+        time.sleep(3)
 
 
 if __name__ == '__main__':
-    page = input("要抓取多少条数据？\n")
-    at_code = input("输入验证码，需手动登录后用浏览器查看然后输入到这里\n")
-    csv_filename = input("输入文件名,文件保存在xx\n")
-    try:
-        search_result(page=page, at_code=at_code, csv_filename=csv_filename)
-    except KeyError:
-        print("验证码不正确请重新输入")
+    while 1:
+        choose = input("一、选择搜索条件：\n1：qc（大专及以上、北京、药学/药物制剂/制药工程/中药学/中药资源与开发、20-30岁、性别不限、期望月薪4000-8000、近3"
+                       "个月更新简历）\n2：qa（本科及以上、北京、中药学、20-30岁、性别男、期望月薪4000-8000、近3个月更新简历）\n")
+        if choose.isdigit():
+            try:
+                if choose <= str(2):
+                    break
+                else:
+                    print("\033[0;31;47m\t####### 没有找到此搜索条件，请重新输入！！！#######\033[0m\n")
+            except UnicodeDecodeError:
+                print("\033[0;301;47m\t####### 请输入纯数字！！！#######\033[0m\n")
+        else:
+            print("\033[0;31;47m\t####### 请输入纯数字！！！#######\033[0m\n")
+
+    while 1:
+        page = input("二、要抓取多少条数据？\n")
+        if page.isdigit():
+            try:
+                break
+            except UnicodeDecodeError:
+                print("\033[0;31;47m\t####### 请输入纯数字！！！#######\033[0m\n")
+        else:
+            print("\033[0;31;47m\t####### 请输入纯数字！！！#######\033[0m\n")
+
+    while 1:
+        try:
+            at_code = input("三、输入验证码，需手动登录后用浏览器查看然后输入到这里\n")
+            # 6853db6730ac4ea098be77e46f6c1e21
+            search_result(page=page, at_code=at_code, choose=choose)
+            break
+        except:
+            print("\033[0;31;47m\t####### 验证码不正确请重新输入！！！#######\033[0m\n")
