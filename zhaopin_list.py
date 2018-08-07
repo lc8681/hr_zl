@@ -5,6 +5,7 @@ import csv
 from tqdm import tqdm
 from urllib.parse import quote
 import time
+import os
 
 
 def search_result(page, at_code, choose):
@@ -84,12 +85,14 @@ def search_result(page, at_code, choose):
         res = requests.post(url_qc, data_qc, headers, cookies=Login_Data)
         check_json = json.loads(res.text)
         datalist = tqdm(check_json['data']['dataList'])
+        os.chdir('./')
         filename = time.strftime('[qc]' + "%Y-%m-%d %H-%M-%S", time.localtime()) + '.csv'
     elif choose == str(2):
         res = requests.post(url_qa, data_qa, headers, cookies=Login_Data)
         check_json = json.loads(res.text)
         datalist = tqdm(check_json['data']['dataList'])
-        filename = './' + time.strftime('[qa]' + "%Y-%m-%d %H-%M-%S", time.localtime()) + '.csv'
+        os.chdir('./')
+        filename = time.strftime('[qa]' + "%Y-%m-%d %H-%M-%S", time.localtime()) + '.csv'
     out = open(filename, 'a', newline='')
     csv_write = csv.writer(out, dialect='excel')
     csv_header = ['更新时间', '姓名', '工作年限', '年龄', '现居住地', '期望工作地点', '学历', '毕业学校', '专业', '期望月薪', '目前状况',
