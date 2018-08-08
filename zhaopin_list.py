@@ -33,7 +33,7 @@ def search_result(start_page, at_code, choose):
         "start": int(start_page),
         "rows": 30,
         "S_DISCLOSURE_LEVEL": 2,
-        "S_EXCLUSIVE_COMPANY": "天津红日康仁堂药品销售有限公司;北京康仁堂制药有限公司",
+        # "S_EXCLUSIVE_COMPANY": "天津红日康仁堂药品销售有限公司;北京康仁堂制药有限公司",
         "S_EDUCATION": "4,1",
         "S_GENDER": "1",
         "S_BIRTH_YEAR": "1988,1998",

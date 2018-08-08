@@ -17,9 +17,8 @@ def search_result(input_name, start_page, at_code):
         "start": int(start_page),
         "rows": 30,
         "S_DISCLOSURE_LEVEL": 2,
-        "S_EXCLUSIVE_COMPANY": input_name,
         "S_KEYWORD_JOBDESC": "生产;质量;采购;qa;qc;gmp;炮制;提取;包装;制剂;配方颗粒",
-        "S_COMPANY_NAME_LAST": "广东一方;江阴天江;深圳三九;四川新绿色;培力",
+        "S_COMPANY_NAME_LAST": input_name,
         "S_DATE_MODIFIED": "180508,180808",
         "S_ENGLISH_RESUME": "1",
         "isrepeat": 1,
@@ -167,7 +166,7 @@ if __name__ == '__main__':
         else:
             print("\033[0;31;47m\t####### 请输入纯数字！！！#######\033[0m\n")
 
-    filename = time.strftime('[定点挖掘]' + "%Y-%m-%d %H-%M-%S", time.localtime()) + '.csv'
+    filename = time.strftime('[定点挖掘:(' + input_name + ')]' + "%Y-%m-%d %H-%M-%S", time.localtime()) + '.csv'
     out = open(filename, 'a+', newline='')
     csv_write = csv.writer(out, dialect='excel')
     csv_header = ['更新时间', '姓名', '工作年限', '年龄', '现居住地', '期望工作地点', '学历', '毕业学校', '专业', '期望月薪', '目前状况',
